@@ -12,6 +12,9 @@
     },
     "android": {
       "package": "com.savanasunilkumar.voiceai"
-    }
+    },
+    "plugins": [
+      "expo-audio"
+    ]
   }
 }
