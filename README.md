@@ -5,7 +5,7 @@ A ChatGPT-style mobile app powered by [Sarvam AI](https://www.sarvam.ai) — mul
 ## Stack
 
 - **Expo / React Native** (SDK 54) — iOS, Android, and web from one codebase
-- **Sarvam AI** chat completions API (`sarvam-m` model), OpenAI-style interface
+- **Sarvam AI** chat completions API (`sarvam-105b-conversations` model), OpenAI-style interface
 
 ## Getting started
 

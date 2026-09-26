@@ -20,7 +20,8 @@ export async function sendChat(messages: ChatMessage[]): Promise<string> {
       "api-subscription-key": apiKey,
     },
     body: JSON.stringify({
-      model: process.env.EXPO_PUBLIC_SARVAM_MODEL ?? "sarvam-m",
+      model:
+        process.env.EXPO_PUBLIC_SARVAM_MODEL ?? "sarvam-105b-conversations",
       messages,
     }),
   });
