@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Voice AI",
+    "slug": "voice-ai",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "voiceai",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.savanasunilkumar.voiceai"
+    },
+    "android": {
+      "package": "com.savanasunilkumar.voiceai"
+    }
+  }
+}
