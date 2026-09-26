@@ -24,10 +24,25 @@ This repo is a bare Expo SDK 54 app (no web deps committed). On a fresh box with
 
 ## Expected behavior
 
-- Empty state shows "Ask anything — try Hindi, Tamil, Telugu, or English." with a "Type a message…" input and "Send" button.
-- With no `EXPO_PUBLIC_SARVAM_API_KEY`, sending a message renders an assistant bubble "Error: Missing EXPO_PUBLIC_SARVAM_API_KEY — copy .env.example to .env and add your Sarvam key." — this is a PASS, it proves the send path works.
-- Expo may warn `react-native@0.81.4 - expected version: 0.81.5`; web still works.
+- Voice-first UI: empty state "Speak in English, Hindi, Tamil, Telugu — Sarvam understands.", status label "Tap the mic and speak", and a 🎙 mic button (turns red ■ while recording).
+- Phase cycle on mic tap: idle → recording ("Listening… tap to stop") → thinking → speaking → idle.
+- With no `EXPO_PUBLIC_SARVAM_API_KEY`, the error path shows the error text in red above the footer — proves the pipeline wiring.
+- Web recordings are `audio/webm` blobs uploaded to Sarvam STT (`saarika:v2.5`); TTS uses `bulbul:v3` speaker "shubh".
+
+## Testing the voice flow on a headless box (no real mic)
+
+Chrome can fake a microphone from a WAV file — this exercises the full mic → STT → chat → TTS pipeline for real:
+
+1. Convert a speech wav to 16kHz mono PCM:
+   `ffmpeg -i input.wav -ar 16000 -ac 1 -c:a pcm_s16le /tmp/fake_mic.wav`
+2. Relaunch Chrome with these flags (keep `--remote-debugging-port=29229`, `--user-data-dir=/home/ubuntu/.browser_data_dir`, and the other Devin args so computer tools keep working — capture the running cmdline via `tr '\0' ' ' </proc/<pid>/cmdline` and append):
+   `--use-fake-device-for-media-stream --use-fake-ui-for-media-stream --use-file-for-fake-audio-capture=/tmp/fake_mic.wav --autoplay-policy=no-user-gesture-required`
+   - `--use-fake-ui-for-media-stream` auto-grants mic permission (expo-audio's requestRecordingPermissionsAsync).
+   - `--autoplay-policy=no-user-gesture-required` prevents the TTS `<audio>` playback from being blocked.
+   - The fake mic **loops the wav** for the whole recording duration — a 1.5s clip recorded for 3.5s transcribes as ~15 repetitions of the sentence. Record briefly (≤2s) if you want a clean transcript.
+3. Kill ALL chrome instances first and verify the surviving window's pid (`xdotool getwindowpid <winid>`) belongs to the flagged chrome — stale flagless instances otherwise leave duplicate windows that grab clicks.
+4. `.env` changes require restarting `expo start` — EXPO_PUBLIC_* vars are baked into the bundle at build time.
 
 ## Devin Secrets Needed
 
-- `EXPO_PUBLIC_SARVAM_API_KEY` (from https://dashboard.sarvam.ai) — only needed to test real Sarvam replies; put it in `/home/ubuntu/repos/voice_ai/.env`.
+- `EXPO_PUBLIC_SARVAM_API_KEY` (from https://dashboard.sarvam.ai) — needed for real STT/chat/TTS; put it in `/home/ubuntu/repos/voice_ai/.env` and restart Expo.
